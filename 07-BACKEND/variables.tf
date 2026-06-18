@@ -15,4 +15,7 @@ variable "common_tags"{
     }
 }
 
+variable "zone_name" {
+  default = "localhelp.store"
+}
 
