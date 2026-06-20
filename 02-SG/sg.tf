@@ -48,6 +48,16 @@ module "app_alb"{
     sg_name          =  "app_alb"
 }
 
+module "web_alb"{
+    source           =  "../../terraform-aws-securitygroup"
+    project_name     =  var.project_name
+    environment      =  var.environment
+    sg_description   =  "SG group for web alb "
+    vpc_id           =  data.aws_ssm_parameter.vpc_id.value
+    common_tags      =  var.common_tags
+    sg_name          =  "web_alb"
+}
+
 module "vpn"{
     source           =  "../../terraform-aws-securitygroup"
     project_name     =  var.project_name
@@ -119,6 +129,26 @@ resource "aws_security_group_rule" "app_alb_vpn" {
   security_group_id                 = module.app_alb.sg_id
 }
 
+# this rule allows bastion connections to the app_alb
+resource "aws_security_group_rule" "app_alb_bastion" {
+  type                              = "ingress"
+  from_port                         = 80
+  to_port                           = 80
+  protocol                          = "tcp"
+  source_security_group_id          = module.bastion.sg_id
+  security_group_id                 = module.app_alb.sg_id
+}
+
+# this rule allows frontend connections to the app_alb
+resource "aws_security_group_rule" "app_alb_frontend" {
+  type                              = "ingress"
+  from_port                         = 80
+  to_port                           = 80
+  protocol                          = "tcp"
+  source_security_group_id          = module.frontend.sg_id
+  security_group_id                 = module.app_alb.sg_id
+}
+
 # this rule allows the bastion connections to the backend
 resource "aws_security_group_rule" "backend_bastion" {
   type                              = "ingress"
@@ -169,6 +199,48 @@ resource "aws_security_group_rule" "frontend_bastion" {
   source_security_group_id          = module.bastion.sg_id
   security_group_id                 = module.frontend.sg_id
 }
+
+# this rule allows the web alb connections to the frontend
+resource "aws_security_group_rule" "frontend_web_alb" {
+  type                              = "ingress"
+  from_port                         = 80
+  to_port                           = 80
+  protocol                          = "tcp"
+  source_security_group_id          = module.web_alb.sg_id
+  security_group_id                 = module.frontend.sg_id
+}
+
+
+# this rule allows the vpn connections to the frontend
+resource "aws_security_group_rule" "frontend_vpn" {
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  source_security_group_id = module.vpn.sg_id # source is where you are getting traffic from
+  security_group_id = module.frontend.sg_id
+}
+
+# this rule allows the public connections to the frontend
+resource "aws_security_group_rule" "web_alb_public" {
+  type              = "ingress"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
+  security_group_id = module.web_alb.sg_id
+}
+
+resource "aws_security_group_rule" "web_alb_public_https" {
+  type              = "ingress"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
+  security_group_id = module.web_alb.sg_id
+}
+
+
 
 # this rule allows the ansible connections to the frontend
 # resource "aws_security_group_rule" "frontend_ansible" {

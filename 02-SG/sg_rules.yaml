@@ -6,7 +6,8 @@
     - localhelp-dev-frontend
     - localhelp-dev-bastion
     #- localhelp-dev-ansible 
-    - localhelp-dev-app-alb                   #not needed as we are doing pull based from github
+    - localhelp-dev-app-alb  
+    - localhelp-dev-web-alb                      #not needed as we are doing pull based from github
     - localhelp-dev-vpn
 
   vpn:
@@ -57,6 +58,11 @@
       source: public
       port: 80
 
+    - name: frontend_web_alb
+      desc: frontend accepting web-alb connections
+      source: web_alb
+      port: 80
+
     - name: frontend_bastion
       desc: frontend accepting bastion connections
       source: bastion
@@ -78,6 +84,31 @@
       desc: app alb accepting vpn connections
       source: vpn
       port: 80
+
+  
+    - name: app_alb_bastion
+      desc: app alb accepting bastion connections
+      source: bastion
+      port: 80
+
+
+    - name: app_alb_frontend
+      desc: app alb accepting frontend connections
+      source: bastion
+      port: 80
+
+
+  web_alb:
+    - name: web_alb_public
+      desc: web alb accepting public connections
+      source: vpn
+      port: 80
+
+
+    - name: web_alb_public_https
+      desc: web alb accepting public connections
+      source: vpn
+      port: 443
   # ansible:
   #   - name: ansible_public
   #     desc: ansible accepting public connections
