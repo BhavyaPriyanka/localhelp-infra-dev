@@ -1,8 +1,6 @@
-# 🌍 LocalHelp Infrastructure (Terraform)
+# 🌍 LocalHelp Dev Infrastructure
 
-Terraform configuration for provisioning the AWS infrastructure required by the **LocalHelp** application.
-
-This repository defines the cloud infrastructure using Infrastructure as Code (IaC), enabling consistent, repeatable, and automated deployments across environments.
+Terraform configurations for provisioning and managing the **AWS development environment** for the **LocalHelp** application.
 
 ## Tech Stack
 
@@ -11,9 +9,9 @@ This repository defines the cloud infrastructure using Infrastructure as Code (I
 
 ## What You'll Find
 
+- Development infrastructure
 - Infrastructure as Code (IaC)
-- AWS resource provisioning
 - Modular Terraform configuration
-- Environment-specific infrastructure
+- AWS resource provisioning
 - 
 <img width="967" height="544" alt="image" src="https://github.com/user-attachments/assets/3a85c67b-e050-4dde-a819-4e5ce193fe83" />
