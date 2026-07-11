@@ -15,6 +15,8 @@ pipeline{
         USER_ACTION=''
     }
 
+    def infraChanges = false
+
     stages{
 
         stage('Init'){
@@ -41,11 +43,11 @@ pipeline{
 
                     if (status==0){
                         echo "No infra changes detected"
-                        env.TF_PLAN_STATUS = "NO_CHANGES"
+                        infraChanges = false
                     }
                     else if (status==2){
                         echo "INFRA CHANGES DETECTED"
-                        env.TF_PLAN_STATUS = "CHANGES"
+                        infraChanges = true
                     }
                     else{
                         error("Terraform Plan Failed")
@@ -60,7 +62,7 @@ pipeline{
     stage('Deploy'){
 
             when{
-                expression { env.TF_PLAN_STATUS == "CHANGES"}
+                expression { infraChanges }
             }
 
             steps{
@@ -74,8 +76,7 @@ pipeline{
 
     stage('Destroy Confirmation'){
 
-            when{
-                expression { env.TF_PLAN_STATUS == "NO_CHANGES"}
+            when{ !infraChanges }
             }
 
             steps{
