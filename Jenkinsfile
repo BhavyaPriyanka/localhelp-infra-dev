@@ -58,13 +58,15 @@ pipeline{
         }
 
 
-    stage('Deploy Confirmation'){
+   stage('Deploy Confirmation') {
 
-            when{
-                expression { infraChanges }
-            }
+    when {
+        expression { infraChanges }
+    }
 
-             applyChoice = input(
+    steps {
+        script {
+            applyChoice = input(
                 message: "Terraform detected changes. Apply them?",
                 parameters: [
                     choice(
@@ -75,16 +77,13 @@ pipeline{
                 ]
             )
 
-            steps{
-              sh '''
-                    cd 01-VPC
-                    terraform apply -auto-approve tfplan
-                    '''
-            }
-
+            echo "applyChoice = '${applyChoice}'"
+        }
     }
+}
 
-    stage('Deploy') {
+stage('Deploy') {
+
     when {
         expression { applyChoice == "APPLY" }
     }
@@ -96,6 +95,8 @@ pipeline{
         '''
     }
 }
+
+  
 
     stage('Destroy Confirmation'){
 
