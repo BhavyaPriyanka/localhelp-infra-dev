@@ -32,7 +32,7 @@ pipeline{
             steps{
                 script{
                     int status = sh(
-                        script: 'terraform plan -detailed-exitcode -out=tfplan'
+                        script: 'terraform plan -detailed-exitcode -out=tfplan',
                         returnStatus: true
                     )
 
