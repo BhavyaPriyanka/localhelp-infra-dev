@@ -1,3 +1,5 @@
+def infraChanges = false
+
 pipeline{
 
     agent {
@@ -15,7 +17,7 @@ pipeline{
         USER_ACTION=''
     }
 
-    def infraChanges = false
+   
 
     stages{
 
@@ -76,12 +78,12 @@ pipeline{
 
     stage('Destroy Confirmation'){
 
-            when{ !infraChanges }
-            }
+            when{ expression{!infraChanges} }
+            
 
             steps{
                script{
-                env.USER_ACTION = input{
+                env.USER_ACTION = input(
                     message: "INFRA ALREADY EXISTS. YOU WANT TO DESTROY IT?"
                     parameters: [
                             choice(
@@ -93,9 +95,10 @@ pipeline{
                     ]
 
                     
-                }
+                )
                }
             }
+    }
 
     }
 
@@ -112,6 +115,7 @@ pipeline{
         }
     }
     }
+    
 
     post{
 
@@ -132,6 +136,7 @@ pipeline{
                 echo "PIPELINE FAILURE.."
             }
     }
-}
+    }
+
 
 
