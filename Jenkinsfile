@@ -32,7 +32,10 @@ pipeline{
             steps{
                 script{
                     int status = sh(
-                        script: 'terraform plan -detailed-exitcode -out=tfplan',
+                        script: '''
+                                    cd 01-VPC
+                                    terraform plan -detailed-exitcode -out=tfplan
+                                ''',
                         returnStatus: true
                     )
 
@@ -61,7 +64,10 @@ pipeline{
             }
 
             steps{
-                sh "terraform apply -auto-approve tfplan"
+              sh '''
+                    cd 01-VPC
+                    terraform apply -auto-approve tfplan
+                    '''
             }
 
     }
@@ -76,10 +82,10 @@ pipeline{
                script{
                 env.USER_ACTION = input{
                     message: "INFRA ALREADY EXISTS. YOU WANT TO DESTROY IT?"
-                    parameters[
+                    parameters: [
                             choice(
                                     name: 'ACTION',
-                                    choices: ["DON'T DESTROY, CONTINUE","DESTROY"],
+                                    choices: ["DON'T DESTROY, CONTINUE\nDESTROY"],
                                     description: 'Select an action !!'
                             )
 
@@ -98,7 +104,10 @@ pipeline{
             expression { env.USER_ACTION == "DESTROY"}
         }
         steps{
-            sh "terraform destroy -auto-approve"
+           sh '''
+            cd 01-VPC
+            terraform destroy -auto-approve
+            '''
         }
     }
 
