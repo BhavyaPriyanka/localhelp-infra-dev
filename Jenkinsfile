@@ -34,17 +34,32 @@ pipeline{
             }
         }
 
-        // stage('Plan'){
-        //     steps{
+        stage('Plan'){
+            steps{
+                sh """
+                        cd 01-VPC
+                        terraform plan
+                """
+            }
+        }
 
-        //     }
-        // }
+        stage('Deploy'){
 
-        // stage('Apply'){
-        //     steps{
+            input {
+
+                message "CONTINUE? DID YOU CHECK ALL RESOURCES IN PLAN??"
+                ok "YES"
+                }
+            }
+            steps{
+
+                sh """
+                        cd 01-VPC
+                        terraform apply -auto-approve
+                """
                    
-        //     }
-        // }
+            }
+        }
 
     }
 
