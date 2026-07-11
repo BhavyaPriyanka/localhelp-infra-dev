@@ -10,6 +10,11 @@ pipeline{
         ansiColor('xterm')
     }
 
+    environment{
+        TF_PLAN_STATUS=''
+        USER_ACTION=''
+    }
+
     stages{
 
         stage('Init'){
@@ -22,45 +27,79 @@ pipeline{
             }
         }
 
-        stage('Test') {
-            steps {
-                echo 'Testing ANSI'
-
-                sh '''
-                printf "\\033[31mRED\\033[0m\n"
-                printf "\\033[32mGREEN\\033[0m\n"
-                printf "\\033[33mYELLOW\\033[0m\n"
-                '''
-            }
-        }
-
+   
         stage('Plan'){
             steps{
-                sh """
-                        cd 01-VPC
-                        terraform plan
-                """
-            }
-        }
+                script{
+                    int status = sh(
+                        script: 'terraform plan -detailed-exitcode -out=tfplan'
+                        returnStatus: true
+                    )
 
-        stage('Deploy'){
-
-            input {
-
-                message "CONTINUE? DID YOU CHECK ALL RESOURCES IN PLAN??"
-                ok "YES"
+                    if (status==0){
+                        echo "No infra changes detected"
+                        env.TF_PLAN_STATUS = "NO_CHANGES"
+                    }
+                    else if (status==2){
+                        echo "INFRA CHANGES DETECTED"
+                        env.TF_PLAN_STATUS = "CHANGES"
+                    }
+                    else{
+                        error("Terraform Plan Failed")
+                    }
                 }
-            
-            steps{
 
-                sh """
-                        cd 01-VPC
-                        terraform apply -auto-approve
-                """
-                   
+
             }
         }
 
+
+    stage('Deploy'){
+
+            when{
+                expression { env.TF_PLAN_STATUS == "CHANGES"}
+            }
+
+            steps{
+                sh "terraform apply -auto-approve tfplan"
+            }
+
+    }
+
+    stage('Destroy Confirmation'){
+
+            when{
+                expression { env.TF_PLAN_STATUS == "NO_CHANGES"}
+            }
+
+            steps{
+               script{
+                env.USER_ACTION = input{
+                    message: "INFRA ALREADY EXISTS. YOU WANT TO DESTROY IT?"
+                    parameters[
+                            choice(
+                                    name: 'ACTION',
+                                    choices: ["DON'T DESTROY, CONTINUE","DESTROY"],
+                                    description: 'Select an action !!'
+                            )
+
+                    ]
+
+                    
+                }
+               }
+            }
+
+    }
+
+    stage('Destroy'){
+
+        when {
+            expression { env.USER_ACTION == "DESTROY"}
+        }
+        steps{
+            sh "terraform destroy -auto-approve"
+        }
     }
 
     post{
