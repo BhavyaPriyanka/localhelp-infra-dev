@@ -1,4 +1,5 @@
 def infraChanges = false
+def userChoice = ""
 
 pipeline{
 
@@ -83,7 +84,7 @@ pipeline{
 
             steps{
                script{
-              def userChoice = input(
+              userChoice = input(
                     message: "INFRA ALREADY EXISTS. YOU WANT TO DESTROY IT?",
                     parameters: [
                             choice(
@@ -97,9 +98,7 @@ pipeline{
                     
                 )
                 echo "userChoice = '${userChoice}'"
-               
-                 env.USER_ACTION = userChoice.toString()
-                  echo "USER_ACTION = '${env.USER_ACTION}'"
+       
                }
             }
     }
@@ -109,7 +108,7 @@ pipeline{
     stage('Destroy'){
 
         when {
-            expression { env.USER_ACTION == "DESTROY"}
+            expression { userChoice == "DESTROY"}
         }
         steps{
            sh '''
