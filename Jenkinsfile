@@ -13,24 +13,24 @@ pipeline{
 
         stage('Init'){
             steps{
-            
-            }
-        }
-
-        stage('Plan'){
-            steps{
-
-            }
-        }
-
-        stage('Apply'){
-            steps{
-                    sh """
+             sh """
 
                             ls -ltr 
                        """
             }
         }
+
+        // stage('Plan'){
+        //     steps{
+
+        //     }
+        // }
+
+        // stage('Apply'){
+        //     steps{
+                   
+        //     }
+        // }
 
     }
 
