@@ -1,5 +1,6 @@
 def infraChanges = false
-def userChoice = ""
+def deleteChoice = ""
+def applyChoice = ""
 
 pipeline{
 
@@ -13,12 +14,7 @@ pipeline{
         ansiColor('xterm')
     }
 
-    environment{
-        TF_PLAN_STATUS=''
-        USER_ACTION=''
-    }
-
-   
+     
 
     stages{
 
@@ -62,11 +58,22 @@ pipeline{
         }
 
 
-    stage('Deploy'){
+    stage('Deploy Confirmation'){
 
             when{
                 expression { infraChanges }
             }
+
+             applyChoice = input(
+                message: "Terraform detected changes. Apply them?",
+                parameters: [
+                    choice(
+                        name: 'ACTION',
+                        choices: "CONTINUE\nAPPLY",
+                        description: "Select an action"
+                    )
+                ]
+            )
 
             steps{
               sh '''
@@ -77,6 +84,19 @@ pipeline{
 
     }
 
+    stage('Deploy') {
+    when {
+        expression { applyChoice == "APPLY" }
+    }
+
+    steps {
+        sh '''
+        cd 01-VPC
+        terraform apply -auto-approve tfplan
+        '''
+    }
+}
+
     stage('Destroy Confirmation'){
 
             when{ expression{!infraChanges} }
@@ -84,7 +104,7 @@ pipeline{
 
             steps{
                script{
-              userChoice = input(
+              deleteChoice = input(
                     message: "INFRA ALREADY EXISTS. YOU WANT TO DESTROY IT?",
                     parameters: [
                             choice(
@@ -97,7 +117,7 @@ pipeline{
 
                     
                 )
-                echo "userChoice = '${userChoice}'"
+                echo "deleteChoice = '${deleteChoice}'"
        
                }
             }
@@ -108,7 +128,7 @@ pipeline{
     stage('Destroy'){
 
         when {
-            expression { userChoice == "DESTROY"}
+            expression { deleteChoice == "DESTROY"}
         }
         steps{
            sh '''
