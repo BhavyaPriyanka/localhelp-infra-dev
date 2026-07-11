@@ -22,6 +22,18 @@ pipeline{
             }
         }
 
+        stage('Test') {
+            steps {
+                echo 'Testing ANSI'
+
+                sh '''
+                printf "\\033[31mRED\\033[0m\n"
+                printf "\\033[32mGREEN\\033[0m\n"
+                printf "\\033[33mYELLOW\\033[0m\n"
+                '''
+            }
+        }
+
         // stage('Plan'){
         //     steps{
 
