@@ -96,8 +96,10 @@ pipeline{
 
                     
                 )
-                echo "USER_ACTION = '${env.USER_ACTION}'"
+                echo "userChoice = '${userChoice}'"
+               
                  env.USER_ACTION = userChoice.toString()
+                  echo "USER_ACTION = '${env.USER_ACTION}'"
                }
             }
     }
