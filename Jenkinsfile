@@ -96,6 +96,7 @@ pipeline{
 
                     
                 )
+                echo "USER_ACTION = '${env.USER_ACTION}'"
                }
             }
     }
