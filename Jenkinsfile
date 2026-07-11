@@ -83,7 +83,7 @@ pipeline{
 
             steps{
                script{
-                env.USER_ACTION = input(
+              def userChoice = input(
                     message: "INFRA ALREADY EXISTS. YOU WANT TO DESTROY IT?",
                     parameters: [
                             choice(
@@ -97,6 +97,7 @@ pipeline{
                     
                 )
                 echo "USER_ACTION = '${env.USER_ACTION}'"
+                 env.USER_ACTION = userChoice.toString()
                }
             }
     }
