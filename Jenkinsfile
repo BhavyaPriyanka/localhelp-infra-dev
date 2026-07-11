@@ -52,7 +52,9 @@ pipeline{
 
             always{
 
-                echo "Hello...BYE BYE!!"
+                echo "Hello...check status below !!"
+                deleteDir()
+
             }
 
             success{
