@@ -84,7 +84,7 @@ pipeline{
             steps{
                script{
                 env.USER_ACTION = input(
-                    message: "INFRA ALREADY EXISTS. YOU WANT TO DESTROY IT?"
+                    message: "INFRA ALREADY EXISTS. YOU WANT TO DESTROY IT?",
                     parameters: [
                             choice(
                                     name: 'ACTION',
@@ -115,7 +115,7 @@ pipeline{
         }
     }
     }
-}
+
 
     post{
 
@@ -135,8 +135,8 @@ pipeline{
 
                 echo "PIPELINE FAILURE.."
             }
-    }
-    }
+    }}
+    
 
 
 
