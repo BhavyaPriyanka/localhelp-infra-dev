@@ -100,7 +100,7 @@ pipeline{
             }
     }
 
-    }
+    
 
     stage('Destroy'){
 
@@ -115,7 +115,7 @@ pipeline{
         }
     }
     }
-    
+}
 
     post{
 
