@@ -50,7 +50,7 @@ pipeline{
                 message "CONTINUE? DID YOU CHECK ALL RESOURCES IN PLAN??"
                 ok "YES"
                 }
-            }
+            
             steps{
 
                 sh """
@@ -82,4 +82,5 @@ pipeline{
                 echo "PIPELINE FAILURE.."
             }
     }
+}
 
