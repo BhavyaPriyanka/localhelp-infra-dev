@@ -85,7 +85,7 @@ pipeline{
                     parameters: [
                             choice(
                                     name: 'ACTION',
-                                    choices: ["DON'T DESTROY, CONTINUE\nDESTROY"],
+                                    choices: "CONTINUE\nDESTROY",
                                     description: 'Select an action !!'
                             )
 
