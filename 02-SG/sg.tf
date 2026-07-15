@@ -271,3 +271,14 @@ resource "aws_security_group_rule" "bastion_public" {
 #   cidr_blocks                       = ["0.0.0.0/0"]
 #   security_group_id                 = module.ansible.sg_id
 # }
+
+
+# added as the part of jenkins ci-cd
+resource "aws_security_group_rule" "backend_default_vpc" {
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  cidr_blocks = ["172.31.0.0/16"]
+  security_group_id = module.backend.sg_id
+}
